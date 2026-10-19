@@ -1,0 +1,169 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}ОргТехМаркет - Интернет-магазин оргтехники{% endblock %}
+
+{% block content %}
+<!-- Герой-секция -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Оргтехника для вашего офиса</h1>
+        <p class="lead mb-4">Широкий выбор принтеров, сканеров, МФУ и расходных материалов по лучшим ценам</p>
+        <a href="{% url 'product_list' %}" class="btn btn-light btn-lg px-5">
+            <i class="fas fa-shopping-bag me-2"></i>Перейти в каталог
+        </a>
+    </div>
+</section>
+
+<!-- Категории -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Категории товаров</h2>
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'category_detail' category.slug %}" class="text-decoration-none">
+                    <div class="card h-100 text-center border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                {% if category.image %}
+                                <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid" style="max-height: 80px;">
+                                {% else %}
+                                <i class="fas fa-box fa-3x text-primary"></i>
+                                {% endif %}
+                            </div>
+                            <h5 class="card-title text-dark">{{ category.name }}</h5>
+                            <p class="text-muted small">{{ category.products.count }} товаров</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Скидки -->
+{% if discounted_products %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4"><i class="fas fa-fire text-danger me-2"></i>Специальные предложения</h2>
+        <div class="row g-4">
+            {% for product in discounted_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card product-card h-100">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <span class="badge bg-danger badge-discount">-{{ product.get_discount_percentage }}%</span>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="price-old">{{ product.old_price }} ₽</p>
+                        <p class="price-new">{{ product.price }} ₽</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <button class="btn btn-primary w-100 btn-add-cart" data-product-id="{{ product.id }}">
+                            <i class="fas fa-cart-plus me-2"></i>В корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Популярные товары -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Популярные товары</h2>
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card product-card h-100">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-print fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                        </a>
+                        <p class="text-muted small">{{ product.category.name }}</p>
+                        <p class="fw-bold text-primary fs-5">{{ product.price }} ₽</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <button class="btn btn-outline-primary w-100 btn-add-cart" data-product-id="{{ product.id }}">
+                            <i class="fas fa-cart-plus me-2"></i>В корзину
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Преимущества -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <i class="fas fa-truck fa-2x mb-3"></i>
+                <h5>Быстрая доставка</h5>
+                <p class="small">По всей России за 1-3 дня</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-shield-alt fa-2x mb-3"></i>
+                <h5>Гарантия качества</h5>
+                <p class="small">Официальная гарантия от производителя</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-credit-card fa-2x mb-3"></i>
+                <h5>Удобная оплата</h5>
+                <p class="small">Карта, наличные, рассрочка</p>
+            </div>
+            <div class="col-md-3">
+                <i class="fas fa-headset fa-2x mb-3"></i>
+                <h5>Поддержка 24/7</h5>
+                <p class="small">Всегда на связи с вами</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('.btn-add-cart').click(function() {
+        var productId = $(this).data('product-id');
+        var btn = $(this);
+        $.ajax({
+            url: '{% url "add_to_cart" %}',
+            method: 'POST',
+            data: {
+                'product_id': productId,
+                'quantity': 1,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(data) {
+                if (data.status === 'success') {
+                    $('#cart-count').text(data.cart_total);
+                    btn.html('<i class="fas fa-check me-2"></i>Добавлено');
+                    btn.removeClass('btn-outline-primary').addClass('btn-success');
+                    setTimeout(function() {
+                        btn.html('<i class="fas fa-cart-plus me-2"></i>В корзину');
+                        btn.removeClass('btn-success').addClass('btn-outline-primary');
+                    }, 2000);
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
